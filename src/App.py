@@ -3,7 +3,7 @@ from File_handlers.txt import read, write
 from Tools.uitilities import create_menu, print_list, no_orders
 import os
 
-#PK commentsgit status
+#PK extra comment here
 
 #Read txt data if any
 list_product = read('C:/Users/jcanoalo/Desktop/IW/Mini_project_1/Data', "Product_list.txt")
