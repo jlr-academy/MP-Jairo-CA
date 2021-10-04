@@ -1,0 +1,12 @@
+class shop()
+    self.name
+    list_products = list_products (class object)
+    list courier = 
+    list orrders =
+
+
+class product()
+    self.name
+
+class courier()
+    self.name
