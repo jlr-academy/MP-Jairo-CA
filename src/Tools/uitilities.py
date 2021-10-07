@@ -1,6 +1,21 @@
 import os
 
 # Prints index and list items
+def print_dict(list, string="Order"):
+    idx = 0
+    for item in list:
+        print(f"ID-{idx+1}: {item.contents}")
+        idx += 1
+        
+def print_dict_k(d = dict()):
+    idx = 0
+    l = []
+    for key in d:
+        print(f"ID-{idx+1}: {key}")
+        l.append(key)
+        idx += 1
+    return l
+
 def print_list(list, string="Products"):
     x = []
     for count, value in enumerate(list):

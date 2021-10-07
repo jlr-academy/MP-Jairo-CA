@@ -2,9 +2,11 @@ import os
 from Items import Courier, Product
 
 def write(x, path, file_name):
-    with open(os.path.join(path, file_name), 'w') as f:
+    os.chdir(path)
+    with open((file_name), 'w') as f:
         for item in x:
-            f.write(f"{item.namae}" + "\n")
+            f.write(f"{item.name}" + "\n")
+    os.chdir("..\\")
         
 def read(path, file_name):
     L = list()

@@ -1,2 +1,2 @@
-call .venv\Scripts\activate
-python .\src\App.py
+call .venv\Scripts\activate.bat
+python .\src\__App__.py
