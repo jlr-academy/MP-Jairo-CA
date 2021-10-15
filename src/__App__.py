@@ -1,5 +1,5 @@
-from File_handlers.txt import read, write
-from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict
+from File_handlers.excl_csv import read, write
+from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict, create_dict, create_dict_with_list
 from Items import Order, Product, Courier
 import os
 
@@ -19,7 +19,7 @@ class Shop:
                 self.add_item(list, string)
 
             elif user_select == '2' :
-                self.edit_item(list, string)
+                self.edit_order(list, string)
 
             elif user_select == '3' :
                 self.del_item(list, string)  
@@ -27,7 +27,7 @@ class Shop:
             elif user_select == '4' :
                 os.system('cls')
                 print(f"==========[ Show {string} list]========== \n")
-                if no_orders(list):
+                if no_orders(list, string):
                     print_list(list, string)
                     input('\n   Press any key and to continue..') 
             elif user_select == '5' :
@@ -55,8 +55,8 @@ class Shop:
             elif user_select == '5' :
                 os.system('cls')
                 print(f"==========[ Show {string} list]========== \n")
-                if no_orders(list):
-                    print_dict(list, string)
+                if no_orders(list, string):
+                    print_list(list, string)
                     input('\n   Press any key and to continue..') 
             elif user_select == '6' :
                 break
@@ -66,8 +66,9 @@ class Shop:
                 
     def launch(self):
         #Read txt data if any
-        self.product = read(".\\Data", "Product_list.txt")
-        self.courier = read(".\\Data", "Courier_list.txt")
+        for item in read(".\\Data", "Product_list.csv"): self.product.append(Product(item))
+        for item in read(".\\Data", "Courier_list.csv"): self.courier.append(Courier(item))
+        for item in read(".\\Data", "Order_list.csv"): self.order.append(Order(item))
         
         while True :
             user_select = create_menu(list = ["Main Menu", "Product Menu", "Courier Menu", "Order Menu",  "Exit"])
@@ -88,8 +89,9 @@ class Shop:
                 input('   Select Only from the list..  Press any key and try again..') 
 
         #Write txt data  
-        write(self.product, ".\\Data", "Product_list.txt")
-        write(self.courier, ".\\Data", "Courier_list.txt")
+        write(self.product, ".\\Data", "Product_list.csv")
+        write(self.courier, ".\\Data", "Courier_list.csv")
+        write(self.order, ".\\Data", "Order_list.csv")
 
     #Add an item to a list
     def add_item(self, log = list(), string = "Product"):
@@ -98,63 +100,51 @@ class Shop:
         while check  == True:
             os.system('cls')
             print(f"==========[ Add New {string} ]==========")
-            print('   NOTE: Enter E any time to EXIT. ')  
-
-            #ask for the item name or ID
-            order_Num = cap(input(f'   Enter the {string} ID or Name. > '))
-
-            #check if duplicate and ask if user want to continue
-            if order_Num in [obj.name for obj in log]:
-                if  like_to_continue(f'{string} ID or Name already on database. Duplicate not permited.. Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
-                    check = True
-                else:
-                    check = False
-                    return log
-
-            #check if user want to exit
-            elif exit(order_Num, f"     You select to Exit or not entered any commands from 'Add New {string}'.. Press any key to Exit. > "):
-                return log
 
             #add new item and ask if it wants to continue
+            if string == "Product":
+                dummy = create_dict({}, ["name", "price"], self.product)
             else:
-                if string == "Product":
-                    log.append(Product(order_Num))
-                else:
-                    log.append(Courier(order_Num))
-                    
-                print(f'"{order_Num}" added to the database')
-                if  like_to_continue(f'Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
+                dummy = create_dict({}, ["name", "phone"], self.courier)
+                
+            if not "name" in dummy.keys():
+                if  like_to_continue(f'{string} ID or Name not created.. Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
                     check = True
+                    continue
                 else:
                     check = False
                     return log
+            else:
+                if string == "Product":
+                    log.append(Product(dummy))
+                else:
+                    log.append(Courier(dummy))
+                
+            print(f'"{dummy["name"]}" added to the database')
+            if  like_to_continue(f'Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
+                check = True
+            else:
+                check = False
+                return log
 
     def create_order(self, log = list()):
         os.system('cls')
         check = True
+        if not no_orders(self.courier, "Courier"):
+            return
+        if not no_orders(self.product, "Product"):
+            return
         while check  == True:
             os.system('cls')
             print("==========[ Add New Order ]==========")
 
             #ask for the order info
-            dummy = {}
-            c_nam = cap(input(f'   Enter the Customer Name. > '))
-            c_ad = cap(input(f'   Enter the Customer Adress. > '))
-            c_ph = cap(input(f'   Enter the Customer Phone number. > '))
+            dummy = create_dict({}, ["customer_name", "customer_address", "customer_phone"], self.order)
             
-            while True:
-                os.system('cls')
-                print_list(self.courier, "Courier")
-                c_cour = input('     Select the Courier ID . > ')
-                if c_cour.isnumeric() and len(self.courier)>=int(c_cour)>0:
-                    break
-                else:
-                    input('   Select Only from the list..  Press any key and try again..')
+            dummy = create_dict_with_list(dummy, self.courier, "courier", multiple = False)
             
-            dummy["customer_name"] = c_nam
-            dummy["customer_address"] = c_ad
-            dummy["customer_phone"] = c_ph
-            dummy["courier"] = int(c_cour)
+            dummy = create_dict_with_list(dummy, self.product, "product", multiple = True)
+            
             dummy["status"] = "Preparing"
 
             #add new item and ask if it wants to continue
@@ -175,10 +165,10 @@ class Shop:
             print(f"==========[ Edit a {string} ]========== \n")
 
             #check if list is empty
-            if not no_orders(log):
+            if not no_orders(log, string):
                 return
 
-            print_dict(log, string)
+            print_list(log, string)
 
             #ask for an item to edit
             edit_id = input(f'\n     Enter the {string} ID to Edit . [E to Exit]. > ')
@@ -197,52 +187,28 @@ class Shop:
                     print(f'\n     You Select to Change "{log[edit_id].contents}".')
                     l = print_dict_k(log[int(edit_id)].contents)
                     key_edit = input('     Select the parameter to edit . > ')
-                    if key_edit.isnumeric() and 5>=int(key_edit)>0:
+                    if key_edit.isnumeric() and len(log[int(edit_id)].contents)>=int(key_edit)>0:
                         key_edit = int(key_edit)-1
                         break
                     else:
                         input('   Select Only from the list..  Press any key and try again..')
                         
                 if l[key_edit] == "courier":
-                    while True:
-                        os.system('cls')
-                        print_list(self.courier, "Courier")
-                        c_cour = input('     Select the new Courier ID . > ')
-                        if c_cour.isnumeric() and len(self.courier)>=int(c_cour)>0:
-                            break
-                        else:
-                            input('   Select Only from the list..  Press any key and try again..')
-                    new_edit = int(c_cour)
+                    log[edit_id].contents = create_dict_with_list(log[edit_id].contents, self.courier, "courier", multiple = False)
+                    
+                elif l[key_edit] == "product":
+                    log[edit_id].contents = create_dict_with_list(log[edit_id].contents, self.product, "product", multiple = True)
                 elif l[key_edit] == "status":
-                    while True:
-                        os.system('cls')
-                        options = ["Preparing", "On its Way", "Delivered", "Cancelled"]
-                        for count, value in enumerate(options):
-                            print(f"ID-{count+1}: {value}")
-                        status = input('     Select the new Status ID . > ')
-                        if status.isnumeric() and len(options)>=int(status)>0:
-                            status = int(status)-1
-                            break
-                        else:
-                            input('   Select Only from the list..  Press any key and try again..')
-                    new_edit = options[status]
+                    log[edit_id].contents = create_dict_with_list(log[edit_id].contents, ["Preparing", "On its Way", "Delivered", "Cancelled"], "status", multiple = False)
                 else:
-                    #change item name or ID and ask if user want to continue
-                    new_edit = cap(input(f'\n"Enter new {l[key_edit]}"'))
-                if new_edit:
-                    print(f"{log[edit_id].contents[l[key_edit]]} changed to {new_edit}")
-                    log[edit_id].contents[l[key_edit]] = new_edit
-                    if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
-                        continue
-                    else:
-                        input(f"     You select Exit from 'Editing an {string}'.. Press any key to Exit. > ")
-                        check_1 = False
-                        return log
+                    log[edit_id].contents = create_dict(log[edit_id].contents, [l[key_edit]], getattr(self, string.lower()))
+                    
+                if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
+                    continue
                 else:
-                    #blank
-                    if not like_to_continue(f'     You entered blank and the value was not updated. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
-                        check_1 = False
-                        return log
+                    input(f"     You select Exit from 'Editing an {string}'.. Press any key to Exit. > ")
+                    check_1 = False
+                    return log
             else:
                 #ID or name not in the databse and ask if user want to continue
                 if not like_to_continue(f'     You Select an ID that is NOT Available in the Data-Base. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
@@ -257,10 +223,10 @@ class Shop:
             print(f"==========[ Edit a Status ]========== \n")
 
             #check if list is empty
-            if not no_orders(log):
+            if not no_orders(log, "Order"):
                 return
 
-            print_dict(log, string)
+            print_list(log, "Order")
 
             #ask for an item to edit
             edit_id = input(f'\n     Enter the {string} ID to Edit . [E to Exit]. > ')
@@ -273,23 +239,9 @@ class Shop:
 
                 edit_id=int(edit_id)-1
                 
-                #ask for the key to edit
-                while True:
-                    os.system('cls')
-                    print(f'\n     You Select to Change the Status of "{log[edit_id].contents}".')
-                    options = ["Preparing", "On its Way", "Delivered", "Cancelled"]
-                    for count, value in enumerate(options):
-                        print(f"ID-{count+1}: {value}")
-                    status = input('     Select the new Status ID . > ')
-                    if status.isnumeric() and len(options)>=int(status)>0:
-                        status = int(status)-1
-                        break
-                    else:
-                        input('   Select Only from the list..  Press any key and try again..')
-                new_edit = options[status]
-                    
-                print(f"{log[edit_id].contents['status']} changed to {new_edit}")
-                log[edit_id].contents['status'] = new_edit
+                print(f'\n     You Select to Change the Status of "{log[edit_id].contents}".')
+                log[edit_id].contents = create_dict_with_list(log[edit_id].contents, ["Preparing", "On its Way", "Delivered", "Cancelled"], "status", multiple = False)
+                
                 if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
                     continue
                 else:
@@ -310,7 +262,7 @@ class Shop:
             print(f"==========[ Edit a {string} ]========== \n")
 
             #check if list is empty
-            if not no_orders(log):
+            if not no_orders(log, string):
                 return
 
             print_list(log, string)
@@ -326,13 +278,13 @@ class Shop:
 
                 edit_id=int(edit_id)-1
 
-                print(f'\n     You Select to Change "{log[int(edit_id)].name}".')
+                print(f'\n     You Select to Change "{log[int(edit_id)].contents}".')
 
                 #ask for the new name
                 New_edit = cap(input(f'   Enter the new "{string} Name". [E to Exit]. > '))
 
                 #check if duplicate and ask if user want to continue
-                if New_edit in [obj.name for obj in log]:
+                if New_edit in [obj.contents for obj in log]:
                     if not like_to_continue(f'\n {string} ID or Name already on database. Duplicate not permited.. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
                         check_1 = False
                         return log
@@ -344,8 +296,8 @@ class Shop:
 
                 #change item name or ID and ask if user want to continue
                 else:
-                    print(f'\n"{log[edit_id].name}" changed to "{New_edit}"')
-                    log[edit_id].name = New_edit
+                    print(f'\n"{log[edit_id].contents}" changed to "{New_edit}"')
+                    log[edit_id].contents = New_edit
                     if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
                         continue
                     else:
@@ -365,7 +317,7 @@ class Shop:
             print(f"==========[ Delete an {string} ]==========\n")
 
             #check if list is empty
-            if not no_orders(log):
+            if not no_orders(log, string):
                 return log
 
             if string == "Product" or string == "Courier":
@@ -380,12 +332,47 @@ class Shop:
                 return log
 
             if edit_id.isnumeric() and len(log)>=int(edit_id)>0: 
-
+                
+                if (string.lower() == "product" or string.lower() == "courier"):
+                    item_used_in_order = 0
+                    for item in self.order:
+                        if isinstance(item.contents[string.lower()], int):
+                            if item.contents[string.lower()] == int(edit_id):
+                                item_used_in_order = 1
+                                if like_to_continue(f'\n{string} linked to an order. Not deleted.. Would you like to continue in "Delete a {string}"? - "Y" for yes and "N" for no.'):
+                                    break
+                                else:
+                                    return log
+                        else:
+                            for i in item.contents[string.lower()]:
+                                if int(edit_id) == i:
+                                    item_used_in_order = 1
+                                    if like_to_continue(f'\n{string} linked to an order. Not deleted.. Would you like to continue in "Delete a {string}"? - "Y" for yes and "N" for no.'):
+                                        break
+                                    else:
+                                        return log
+                        if item_used_in_order == 1:
+                            break
+                if item_used_in_order == 1:
+                    continue
+                
                 edit_id = int(edit_id)-1
+                
+
                 # ask if user wants to delete, and if the user wants to continue in the delete menu
                 if like_to_continue(f'\nDo you want to proceed?  Y for Yes / N for No'):
                     input(f'Deleting.., Press any key to Continue..')
                     log.pop(edit_id)
+                    if (string.lower() == "product" or string.lower() == "courier"):
+                        for item in self.order:
+                            if isinstance(item.contents[string.lower()], int):
+                                if item.contents[string.lower()] > edit_id:
+                                    item.contents[string.lower()] = item.contents[string.lower()]-1
+                            else:
+                                for i in range(0, len(item.contents[string.lower()])):
+                                    if edit_id+1 < item.contents[string.lower()][i]:
+                                        item.contents[string.lower()][i] = item.contents[string.lower()][i]-1
+                    
                     if like_to_continue(f'\n{string} deleted.. Would you like to continue in "Delete a {string}"? - "Y" for yes and "N" for no.'):
                         continue
                     else:

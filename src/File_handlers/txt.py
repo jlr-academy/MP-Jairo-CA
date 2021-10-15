@@ -5,7 +5,7 @@ def write(x, path, file_name):
     os.chdir(path)
     with open((file_name), 'w') as f:
         for item in x:
-            f.write(f"{item.name}" + "\n")
+            f.write(f"{item.contents}" + "\n")
     os.chdir("..\\")
         
 def read(path, file_name):
