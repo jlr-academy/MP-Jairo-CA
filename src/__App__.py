@@ -54,10 +54,25 @@ class Shop:
 
             elif user_select == '5' :
                 os.system('cls')
-                print(f"==========[ Show {string} list]========== \n")
                 if no_orders(list, string):
-                    print_list(list, string)
-                    input('\n   Press any key and to continue..') 
+                    user_select = create_menu(list = [f"Show {string} list", f"Generic {string} List", f"{string} list by 'status'", f"Order {string} list by 'courier'"])
+                    if user_select == "1":
+                        print_list(list, string)
+                        input('\n   Press any key and to continue..') 
+                    elif user_select == "2":
+                        for item in ["Preparing", "On its Way", "Delivered", "Cancelled"]:
+                            print(item)
+                            for item2 in self.order:
+                                if item2.contents["status"] == item: print(item2.contents)
+                            input('\n   Press any key and to continue..') 
+                    elif user_select == "3":
+                        for item in range(0, len(self.courier)):
+                            print(self.courier[item].contents["name"])
+                            for item2 in self.order:
+                                if item2.contents["courier"] == item+1: print(item2.contents)
+                            input('\n   Press any key and to continue..') 
+                    else: 
+                        input('   Select Only from the list..  Press any key and try again..') 
             elif user_select == '6' :
                 break
 
@@ -253,62 +268,6 @@ class Shop:
                 if not like_to_continue(f'     You Select an ID that is NOT Available in the Data-Base. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
                     check_1 = False
                     return log
-
-    #Edit an item in a list   
-    def edit_item(self, log=list(), string = "Product"):
-        check_1 = True  
-        while check_1 == True:
-            os.system('cls')
-            print(f"==========[ Edit a {string} ]========== \n")
-
-            #check if list is empty
-            if not no_orders(log, string):
-                return
-
-            print_list(log, string)
-
-            #ask for an item to edit
-            edit_id = input(f'\n     Enter the {string} ID to Edit . [E to Exit]. > ')
-
-            #check if user wants to exit
-            if exit(edit_id, f"     You select to Exit or not entered any commands from 'Editing an {string}'.. Press any key to Exit. > "):
-                return log
-
-            if edit_id.isnumeric() and len(log)>=int(edit_id)>0:
-
-                edit_id=int(edit_id)-1
-
-                print(f'\n     You Select to Change "{log[int(edit_id)].contents}".')
-
-                #ask for the new name
-                New_edit = cap(input(f'   Enter the new "{string} Name". [E to Exit]. > '))
-
-                #check if duplicate and ask if user want to continue
-                if New_edit in [obj.contents for obj in log]:
-                    if not like_to_continue(f'\n {string} ID or Name already on database. Duplicate not permited.. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
-                        check_1 = False
-                        return log
-
-                #check if user wnats to exit
-                elif exit(New_edit,f"     You select to Exit or not entered any commands from 'Editing an {string}'.. Press any key to Exit. > "):
-                    check_1 = False
-                    return log
-
-                #change item name or ID and ask if user want to continue
-                else:
-                    print(f'\n"{log[edit_id].contents}" changed to "{New_edit}"')
-                    log[edit_id].contents = New_edit
-                    if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
-                        continue
-                    else:
-                        input(f"     You select Exit from 'Editing an {string}'.. Press any key to Exit. > ")
-                        check_1 = False
-                        return log
-            else:
-                #ID or name not in the databse and ask if user want to continue
-                if not like_to_continue(f'     You Select an ID that is NOT Available in the Data-Base. Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
-                    check_1 = False
-                    return log
                 
     #Delete an item in a list       
     def del_item(self, log, string = "Product"):
@@ -389,8 +348,8 @@ class Shop:
                 else:
                     return log
                 
-tienda_1 = Shop("1")
-tienda_1.launch() 
+#tienda_1 = Shop("1")
+#tienda_1.launch() 
 
 
     
