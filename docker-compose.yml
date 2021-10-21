@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  db:
+  db_app:
     image: mysql
     container_name: cafe_sql_container
     restart: always

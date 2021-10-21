@@ -1,6 +1,7 @@
 from File_handlers.excl_csv import read, write
 from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict, create_dict, create_dict_with_list, clear
 from Items import Order, Product, Courier
+from Tools.sql_utilities import add_item_table
 import os
 
 #App
@@ -131,8 +132,10 @@ class Shop:
                     return log
             else:
                 if string == "Product":
+                    dummy = add_item_table(dummy, "products")
                     log.append(Product(dummy))
                 else:
+                    dummy = add_item_table(dummy, "couriers")
                     log.append(Courier(dummy))
                 
             print(f'"{dummy["name"]}" added to the database')
