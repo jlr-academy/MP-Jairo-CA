@@ -25,8 +25,6 @@ def test_edit_order_status(mock_input, mock_like_to_continue):
     print(actual)
     assert actual == expected
 
-test_edit_order_status()  
-
 
 def create_menu(list = ["Main Menu", "Add New Product", "Edit an Product",  "Delete an Product", "Show Products", "Exit"]):
     while True:

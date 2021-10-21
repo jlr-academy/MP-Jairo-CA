@@ -1,5 +1,5 @@
 from File_handlers.excl_csv import read, write
-from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict, create_dict, create_dict_with_list
+from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict, create_dict, create_dict_with_list, clear
 from Items import Order, Product, Courier
 import os
 
@@ -25,10 +25,10 @@ class Shop:
                 self.del_item(list, string)  
 
             elif user_select == '4' :
-                os.system('cls')
+                clear()
                 print(f"==========[ Show {string} list]========== \n")
                 if no_orders(list, string):
-                    print_list(list, string)
+                    print_list(list)
                     input('\n   Press any key and to continue..') 
             elif user_select == '5' :
                 break
@@ -53,11 +53,11 @@ class Shop:
                 self.del_item(list, string)  
 
             elif user_select == '5' :
-                os.system('cls')
+                clear()
                 if no_orders(list, string):
                     user_select = create_menu(list = [f"Show {string} list", f"Generic {string} List", f"{string} list by 'status'", f"Order {string} list by 'courier'"])
                     if user_select == "1":
-                        print_list(list, string)
+                        print_list(list)
                         input('\n   Press any key and to continue..') 
                     elif user_select == "2":
                         for item in ["Preparing", "On its Way", "Delivered", "Cancelled"]:
@@ -81,9 +81,9 @@ class Shop:
                 
     def launch(self):
         #Read txt data if any
-        for item in read(".\\Data", "Product_list.csv"): self.product.append(Product(item))
-        for item in read(".\\Data", "Courier_list.csv"): self.courier.append(Courier(item))
-        for item in read(".\\Data", "Order_list.csv"): self.order.append(Order(item))
+        for item in read("Data", "Product_list.csv"): self.product.append(Product(item))
+        for item in read("Data", "Courier_list.csv"): self.courier.append(Courier(item))
+        for item in read("Data", "Order_list.csv"): self.order.append(Order(item))
         
         while True :
             user_select = create_menu(list = ["Main Menu", "Product Menu", "Courier Menu", "Order Menu",  "Exit"])
@@ -104,16 +104,16 @@ class Shop:
                 input('   Select Only from the list..  Press any key and try again..') 
 
         #Write txt data  
-        write(self.product, ".\\Data", "Product_list.csv")
-        write(self.courier, ".\\Data", "Courier_list.csv")
-        write(self.order, ".\\Data", "Order_list.csv")
+        write(self.product, "Data", "Product_list.csv")
+        write(self.courier, "Data", "Courier_list.csv")
+        write(self.order, "Data", "Order_list.csv")
 
     #Add an item to a list
     def add_item(self, log = list(), string = "Product"):
-        os.system('cls')
+        clear()
         check = True
         while check  == True:
-            os.system('cls')
+            clear()
             print(f"==========[ Add New {string} ]==========")
 
             #add new item and ask if it wants to continue
@@ -143,14 +143,14 @@ class Shop:
                 return log
 
     def create_order(self, log = list()):
-        os.system('cls')
+        clear()
         check = True
         if not no_orders(self.courier, "Courier"):
             return
         if not no_orders(self.product, "Product"):
             return
         while check  == True:
-            os.system('cls')
+            clear()
             print("==========[ Add New Order ]==========")
 
             #ask for the order info
@@ -176,14 +176,14 @@ class Shop:
     def edit_order(self, log=list(), string = "Order"):
         check_1 = True  
         while check_1 == True:
-            os.system('cls')
+            clear()
             print(f"==========[ Edit a {string} ]========== \n")
 
             #check if list is empty
             if not no_orders(log, string):
                 return
 
-            print_list(log, string)
+            print_list(log)
 
             #ask for an item to edit
             edit_id = input(f'\n     Enter the {string} ID to Edit . [E to Exit]. > ')
@@ -198,7 +198,7 @@ class Shop:
                 
                 #ask for the key to edit
                 while True:
-                    os.system('cls')
+                    clear()
                     print(f'\n     You Select to Change "{log[edit_id].contents}".')
                     l = print_dict_k(log[int(edit_id)].contents)
                     key_edit = input('     Select the parameter to edit . > ')
@@ -234,14 +234,14 @@ class Shop:
     def edit_order_status(self, log=list(), string = "Order Status"):
         check_1 = True  
         while check_1 == True:
-            os.system('cls')
+            clear()
             print(f"==========[ Edit a Status ]========== \n")
 
             #check if list is empty
             if not no_orders(log, "Order"):
                 return
 
-            print_list(log, "Order")
+            print_list(log)
 
             #ask for an item to edit
             edit_id = input(f'\n     Enter the {string} ID to Edit . [E to Exit]. > ')
@@ -272,7 +272,7 @@ class Shop:
     #Delete an item in a list       
     def del_item(self, log, string = "Product"):
         while True:
-            os.system('cls')
+            clear()
             print(f"==========[ Delete an {string} ]==========\n")
 
             #check if list is empty
@@ -280,7 +280,7 @@ class Shop:
                 return log
 
             if string == "Product" or string == "Courier":
-                print_list(log, string)
+                print_list(log)
             else:
                 print_dict(log, string)
 
@@ -348,8 +348,8 @@ class Shop:
                 else:
                     return log
                 
-#tienda_1 = Shop("1")
-#tienda_1.launch() 
+tienda_1 = Shop("1")
+tienda_1.launch() 
 
 
     

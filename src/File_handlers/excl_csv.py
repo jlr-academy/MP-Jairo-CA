@@ -10,7 +10,7 @@ def write(tocsv, path, file_name):
             dict_writer.writeheader()
             for item in tocsv:
                 dict_writer.writerow(item.contents)
-        os.chdir("..\\")
+        os.chdir("..")
     
 def read(path, file_name):
     l = list()

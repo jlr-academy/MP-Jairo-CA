@@ -1,6 +1,10 @@
 import os
 from Items import Product, Courier, Order
 
+def clear():
+    # Clearing screen is different depending on whether windows or unix-like
+    os.system('cls' if os.name == 'nt' else 'clear')
+    
 def create_dict(d = dict(), keys = [], list_d = list()):
     for i in range(0,len(keys)):
         user_input = cap(input(f'   Enter the {keys[i]}. > '))
@@ -29,8 +33,8 @@ def create_dict(d = dict(), keys = [], list_d = list()):
 def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):
     check = True
     while check == True:
-        os.system('cls')
-        print_list(L, key)
+        clear()
+        print_list(L)
         if multiple == False:
             user_input = input(f'     Select the {key} ID . > ')
             if user_input.isnumeric() and len(L)>=int(user_input)>0:
@@ -77,7 +81,7 @@ def print_dict_k(d = dict()):
         idx += 1
     return l
 
-def print_list(list, string="Products"):
+def print_list(list):
     x = []
     if isinstance(list[0], Product) or isinstance(list[0], Courier) or isinstance(list[0], Order):
         for count, value in enumerate(list):
@@ -88,7 +92,7 @@ def print_list(list, string="Products"):
 
 #Print a standard menu based on input and asks for user input
 def create_menu(list = ["Main Menu", "Add New Product", "Edit an Product",  "Delete an Product", "Show Products", "Exit"]):
-    os.system('cls')
+    clear()
     print(f'==========[ {list[0]} ]==========')
     for i in range(1,len(list)):
         print(f'     {i}. {list[i]}')

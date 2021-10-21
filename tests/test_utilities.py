@@ -1,7 +1,8 @@
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 import sys
 sys.path.append('C:/Users/jcanoalo/Desktop/IW/cafe_app/src')
-from src.Tools.uitilities import create_dict, create_dict_with_list
+from Tools.uitilities import create_dict, create_dict_with_list, print_dict, print_dict_k, print_list
+import __App__, Items
 
 @patch("builtins.input")
 def test_create_dict(mock_input):
@@ -31,10 +32,40 @@ def test_create_dict_with_list(mock_input):
     assert actual == expected
 
 @patch("builtins.print")
-def test_print_dict(mock_print, mock_input):
+def test_print_dict(mock_print):
     #assemble
-    mock_input.side_effect = ['Jairo', '30']
-    get_user_details()
-    mock_print.assert_called_with("Thank you, your name is Jairo and your age is 30")
-    assert mock_input.call_count == 2
+    l = [{"name": "jairo", "age": "30"}]
+    actual = []
+    for item in l:
+        actual.append(Items.Product(item))
+    print_dict(actual)
+    mock_print.assert_called_with("ID-1: {'name': 'jairo', 'age': '30'}")
     assert mock_print.call_count == 1
+    
+@patch("builtins.print")
+def test_print_dict_k(mock_print):
+    #assemble
+    d = {"name": "jairo", "age": "30"}
+    expected = [call("ID-1: name"), call("ID-2: age")]
+    
+    print_dict_k(d)
+    
+    mock_print.assert_has_calls(expected, any_order=False)
+    assert mock_print.call_count == 2
+
+@patch("builtins.print")
+def test_print_list(mock_print):
+    #assemble
+    l = [{"name": "jairo", "age": "30"}]
+    expected = [call("ID-1: {'name': 'jairo', 'age': '30'}")]
+    
+    actual = []
+    for item in l:
+        actual.append(Items.Product(item))
+        
+    actual = print_list(actual)
+    
+    mock_print.assert_has_calls(expected, any_order=False)
+    assert mock_print.call_count == 1
+    
+    

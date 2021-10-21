@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db:
+    image: mysql
+    container_name: cafe_sql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${mysql_pass}"
+    ports:
+      - 3307:3306
+    volumes:
+      - ./example_db:/Miniproject/sql
+  app:
+    image: Miniproject
+    container_name: Miniproject_app_container
+    volumes:
+      - type: bind
+        source: ./Data
+        target: /Miniproject/Data
+  adminer:
+    image: adminer
+    container_name: adminer_Miniproject_container
+    restart: always
+    ports:
+      - 8081:8080
+volumes:
+  example_db:
