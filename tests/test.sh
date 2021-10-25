@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo $HOME
 echo -n "Enter file name or pytest to run all: "
 read var
 
