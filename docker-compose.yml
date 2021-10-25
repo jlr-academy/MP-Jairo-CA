@@ -11,7 +11,7 @@ services:
     volumes:
       - ./example_db:/Miniproject/sql
   app:
-    image: Miniproject
+    image: miniproject
     container_name: Miniproject_app_container
     volumes:
       - type: bind

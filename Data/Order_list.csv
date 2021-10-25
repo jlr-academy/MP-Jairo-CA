@@ -1,4 +1,5 @@
 customer_name,customer_address,customer_phone,courier,product,status
-Jairo,Flat,09,2,"[1, 2, 3]",Cancelled
+Jairo,Flat,09,2,"[1, 2, 3]",Preparing
 John,House,98,1,[1],On its Way
-Fabio,Finchley,Abc123,2,"[1, 3]",Preparing
+Fabio,Finchley,Abc123,2,"[1, 3]",On its Way
+Sam,Gaydon,1,2,"[1, 7, 3]",Preparing

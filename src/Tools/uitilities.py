@@ -15,13 +15,39 @@ def create_dict(d = dict(), keys = [], list_d = list()):
                 print('ID or Name already on database. Duplicate not permited...')
                 return d
             elif not user_input:
-                print("You enter a Blank 'name' and the value was not created")
+                print("You enter a Blank 'name' and the item was not created")
                 return d
             elif keys[i] in d:
                 print(f"{d[keys[i]]} changed to {user_input}")
                 d[keys[i]] = user_input
             else:
                 d[keys[i]] = user_input
+        elif keys[i] == "price":
+            try:
+                if keys[i] in d:
+                    print(f"{d[keys[i]]} changed to {user_input}")
+                    d[keys[i]] = float(user_input)
+                else:
+                    d[keys[i]] = float(user_input)
+            except:
+                if not user_input:
+                    d[keys[i]] = user_input
+                else:
+                    print('"price" should be interger or float...Enter "blank" if not known. item was not created')
+                    return {}
+        elif keys[i] == "phone":
+            try:
+                if keys[i] in d:
+                    print(f"{d[keys[i]]} changed to {user_input}")
+                    d[keys[i]] = int(user_input)
+                else:
+                    d[keys[i]] = int(user_input)
+            except:
+                if not user_input:
+                    d[keys[i]] = user_input
+                else:
+                    print('"phone" should be interger...Enter "blank" if not known. item was not created')
+                    return {}
         elif keys[i] in d:
             print(f"{d[keys[i]]} changed to {user_input}")
             d[keys[i]] = user_input
@@ -30,14 +56,14 @@ def create_dict(d = dict(), keys = [], list_d = list()):
             
     return d
 
-def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):
+def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):   
     check = True
     while check == True:
         clear()
         print_list(L)
         if multiple == False:
             user_input = input(f'     Select the {key} ID . > ')
-            if user_input.isnumeric() and len(L)>=int(user_input)>0:
+            if user_input.isnumeric() and ((not key == "product" and not key == "courier" and len(L)>=int(user_input)>0) or (key == "product" or "courier" and int(user_input) in [obj.contents["id"] for obj in L])):
                 if key in d:
                     if key == "status":
                         print(f"{d[key]} changed to {L[int(user_input)-1]}")
@@ -53,7 +79,7 @@ def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):
         else:
             user_input = input(f'     Select the {key} ID . Use comma-separated ID values for multiple slection  > ').split(",")
             for i in range(0, len(user_input)):
-                if user_input[i].isnumeric() and len(L)>=int(user_input[i])>0:
+                if user_input[i].isnumeric() and ((key == "status" and len(L)>=int(user_input[i])>0) or (key == "product" or "courier" and int(user_input[i]) in [obj.contents["id"] for obj in L])):
                     if i == len(user_input)-1:
                         if key in d:
                             print(f"{d[key]} changed to {list(map(int, user_input))}")
@@ -76,14 +102,18 @@ def print_dict_k(d = dict()):
     idx = 0
     l = []
     for key in d:
-        print(f"ID-{idx+1}: {key}")
-        l.append(key)
-        idx += 1
+        if not key == "id":
+            print(f"ID-{idx+1}: {key}")
+            l.append(key)
+            idx += 1
     return l
 
 def print_list(list):
     x = []
-    if isinstance(list[0], Product) or isinstance(list[0], Courier) or isinstance(list[0], Order):
+    if isinstance(list[0], Product) or isinstance(list[0], Courier):
+        for item in list:
+            print(f"{item.contents}")
+    elif isinstance(list[0], Order):
         for count, value in enumerate(list):
             print(f"ID-{count+1}: {value.contents}")
     else:

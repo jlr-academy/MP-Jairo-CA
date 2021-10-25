@@ -1,10 +1,3 @@
-name,price
-Coke Max,1
-Cake,10
-Turkey Sandwich,3.5
-Coke,40
-Coke Zero,35
-Coke Orange,34
-Bread,3
-Ss,5
-Dd,4
+id,name,price
+1,Coke,2.67
+7,Toast,1.12

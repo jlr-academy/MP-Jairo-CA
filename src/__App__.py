@@ -1,7 +1,8 @@
-from File_handlers.excl_csv import read, write
+from File_handlers.excl_csv import write, read
 from Tools.uitilities import create_menu, print_dict_k, print_list, no_orders, cap, like_to_continue, exit, print_dict, create_dict, create_dict_with_list, clear
 from Items import Order, Product, Courier
-from Tools.sql_utilities import add_item_table
+from Tools.sql_utilities import add_item_table, edit_item_table, delete_item_table
+from File_handlers.sql import read as read_sql
 import os
 
 #App
@@ -82,8 +83,8 @@ class Shop:
                 
     def launch(self):
         #Read txt data if any
-        for item in read("Data", "Product_list.csv"): self.product.append(Product(item))
-        for item in read("Data", "Courier_list.csv"): self.courier.append(Courier(item))
+        for item in read_sql("products"): self.product.append(Product(item))
+        for item in read_sql("couriers"): self.courier.append(Courier(item))
         for item in read("Data", "Order_list.csv"): self.order.append(Order(item))
         
         while True :
@@ -124,7 +125,7 @@ class Shop:
                 dummy = create_dict({}, ["name", "phone"], self.courier)
                 
             if not "name" in dummy.keys():
-                if  like_to_continue(f'{string} ID or Name not created.. Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
+                if  like_to_continue(f'{string} Item not created.. Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
                     check = True
                     continue
                 else:
@@ -194,11 +195,16 @@ class Shop:
             #check if user wants to exit
             if exit(edit_id, f"     You select to Exit or not entered any commands from 'Editing an {string}'.. Press any key to Exit. > "):
                 return log
-
-            if edit_id.isnumeric() and len(log)>=int(edit_id)>0:
-
-                edit_id=int(edit_id)-1
-                
+            
+            if edit_id.isnumeric() and (((string == "Product" or string == "Courier") and int(edit_id) in [obj.contents["id"] for obj in log]) or (string == "Order" and len(log)>=int(edit_id)>0)):
+                if string == "Order":
+                    edit_id = int(edit_id) - 1
+                else:
+                    for i in range(0,len(log)):
+                        if int(edit_id) == log[i].contents["id"]:
+                            edit_id = i
+                            break
+                                
                 #ask for the key to edit
                 while True:
                     clear()
@@ -220,7 +226,10 @@ class Shop:
                     log[edit_id].contents = create_dict_with_list(log[edit_id].contents, ["Preparing", "On its Way", "Delivered", "Cancelled"], "status", multiple = False)
                 else:
                     log[edit_id].contents = create_dict(log[edit_id].contents, [l[key_edit]], getattr(self, string.lower()))
-                    
+                    if string == "Product":
+                        edit_item_table(log[edit_id].contents["id"], log[edit_id].contents, l[key_edit], "products")
+                    if string == "Courier":
+                        edit_item_table(log[edit_id].contents["id"], log[edit_id].contents, l[key_edit], "couriers")
                 if like_to_continue(f'Would you like to continue in "Edit a {string}"? - "Y" for yes and "N" for no.'):
                     continue
                 else:
@@ -285,7 +294,7 @@ class Shop:
             if string == "Product" or string == "Courier":
                 print_list(log)
             else:
-                print_dict(log, string)
+                print_dict(log)
 
             edit_id = input(f'\n     Enter the {string} ID to Delete . [E to Exit]. > ')
 
@@ -293,10 +302,10 @@ class Shop:
             if exit(edit_id, f"     You select to Exit or not entered any commands from 'Deleting a {string}'.. Press any key to Exit. > "):
                 return log
 
-            if edit_id.isnumeric() and len(log)>=int(edit_id)>0: 
+            if edit_id.isnumeric() and ((string == "Order" and len(log)>=int(edit_id)>0) or (string == "Product" or "Courier" and int(edit_id) in [obj.contents["id"] for obj in log])):
                 
+                item_used_in_order = 0
                 if (string.lower() == "product" or string.lower() == "courier"):
-                    item_used_in_order = 0
                     for item in self.order:
                         if isinstance(item.contents[string.lower()], int):
                             if item.contents[string.lower()] == int(edit_id):
@@ -315,26 +324,27 @@ class Shop:
                                         return log
                         if item_used_in_order == 1:
                             break
+                        
                 if item_used_in_order == 1:
                     continue
                 
-                edit_id = int(edit_id)-1
+                if string == "Order":
+                    edit_id = int(edit_id) - 1
+                else:
+                    for i in range(0,len(log)):
+                        if int(edit_id) == log[i].contents["id"]:
+                            edit_id = i
+                            break
                 
 
                 # ask if user wants to delete, and if the user wants to continue in the delete menu
                 if like_to_continue(f'\nDo you want to proceed?  Y for Yes / N for No'):
                     input(f'Deleting.., Press any key to Continue..')
+                    if string.lower() == "product":
+                        delete_item_table(log[edit_id].contents["id"], "products")
+                    if string.lower() == "courier":
+                        delete_item_table(log[edit_id].contents["id"], "couriers")
                     log.pop(edit_id)
-                    if (string.lower() == "product" or string.lower() == "courier"):
-                        for item in self.order:
-                            if isinstance(item.contents[string.lower()], int):
-                                if item.contents[string.lower()] > edit_id:
-                                    item.contents[string.lower()] = item.contents[string.lower()]-1
-                            else:
-                                for i in range(0, len(item.contents[string.lower()])):
-                                    if edit_id+1 < item.contents[string.lower()][i]:
-                                        item.contents[string.lower()][i] = item.contents[string.lower()][i]-1
-                    
                     if like_to_continue(f'\n{string} deleted.. Would you like to continue in "Delete a {string}"? - "Y" for yes and "N" for no.'):
                         continue
                     else:
@@ -351,8 +361,8 @@ class Shop:
                 else:
                     return log
                 
-tienda_1 = Shop("1")
-tienda_1.launch() 
+#tienda_1 = Shop("1")
+#tienda_1.launch() 
 
 
     
