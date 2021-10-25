@@ -9,7 +9,7 @@ if [[ $exit_code = 0 ]]; then
     echo "success"
     git add .
     git commit -m "shell scripting"
-    git push origin master
+    git push
 else
     echo "failure: $exit_code"
 fi
