@@ -822,8 +822,8 @@ class Shop:
                 else:
                     return log
                 
-#tienda_1 = Shop("1")
-#tienda_1.launch() 
+tienda_1 = Shop("1")
+tienda_1.launch() 
 
 
     
