@@ -1,3 +1,7 @@
-id,name,price
-1,Coke,2.67
-7,Toast,1.12
+id,name,price,quantity
+1,Coke,2.5,55.0
+2,Pepsi,1.0,191.0
+3,Lemon,2.5,40.0
+5,Chips,4.0,30.0
+7,Lemon Cake,2.5,175.0
+8,Sandwich,2.55,10.0

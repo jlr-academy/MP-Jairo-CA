@@ -1,5 +1,9 @@
 import os
 from Items import Product, Courier, Order
+from colorama import Fore, Back, Style
+import tabulate
+from colorama import init
+init(autoreset=True)
 
 def clear():
     # Clearing screen is different depending on whether windows or unix-like
@@ -7,50 +11,56 @@ def clear():
     
 def create_dict(d = dict(), keys = [], list_d = list()):
     for i in range(0,len(keys)):
-        user_input = cap(input(f'   Enter the {keys[i]}. > '))
+        user_input = cap(input('\n {:<50}'.format(Fore.CYAN + f'Enter the {keys[i]}. > ' + Style.RESET_ALL)))
+        
+            
         if not user_input and keys[i] in d:
-            print("You enter Blank and the value was not updated")
+            print('\n {:<50}'.format(Fore.WHITE + Back.LIGHTRED_EX + "You enter Blank and the value was not updated"))
         elif keys[i] == "name":
-            if user_input in [obj.contents["name"] for obj in list_d]:
-                print('ID or Name already on database. Duplicate not permited...')
-                return d
+            if list_d and (((isinstance(list_d[0], Product) or isinstance(list_d[0], Courier)) and user_input in [obj.contents["name"] for obj in list_d]) or (isinstance(list_d[0], dict) and user_input in [obj["name"] for obj in list_d])):
+                print('\n {:<50}'.format(Fore.WHITE + Back.LIGHTRED_EX + 'ID or Name already on database. Duplicate not permited...'))
+                return {}
             elif not user_input:
-                print("You enter a Blank 'name' and the item was not created")
-                return d
+                print('\n {:<50}'.format(Fore.WHITE + Back.LIGHTRED_EX + "You enter a Blank 'name' and the item was not created"))
+                return {}
             elif keys[i] in d:
-                print(f"{d[keys[i]]} changed to {user_input}")
+                print('\n {:<50}'.format(Fore.CYAN + f"{d[keys[i]]} changed to " + Fore.WHITE + f"{user_input}"))
                 d[keys[i]] = user_input
             else:
                 d[keys[i]] = user_input
-        elif keys[i] == "price":
+                
+        elif keys[i] == "price" or keys[i] == "quantity":
             try:
                 if keys[i] in d:
-                    print(f"{d[keys[i]]} changed to {user_input}")
+                    print('\n {:<50}'.format(Fore.CYAN + f"{d[keys[i]]} changed to " + Fore.WHITE +  f"{user_input}"))
                     d[keys[i]] = float(user_input)
                 else:
                     d[keys[i]] = float(user_input)
             except:
                 if not user_input:
-                    d[keys[i]] = user_input
+                    return d
                 else:
-                    print('"price" should be interger or float...Enter "blank" if not known. item was not created')
+                    print('\n {:<50}'.format(Back.RED + Fore.WHITE + '"price" should be interger or float...Enter "blank" if not known. item was not created'))
                     return {}
+                
         elif keys[i] == "phone":
             try:
                 if keys[i] in d:
-                    print(f"{d[keys[i]]} changed to {user_input}")
+                    print('\n {:<50}'.format(Fore.CYAN + f"{d[keys[i]]} changed to " + Fore.WHITE + f"{user_input}"))
                     d[keys[i]] = int(user_input)
                 else:
                     d[keys[i]] = int(user_input)
             except:
                 if not user_input:
-                    d[keys[i]] = user_input
+                    return d
                 else:
-                    print('"phone" should be interger...Enter "blank" if not known. item was not created')
+                    print('\n {:<50}'.format(Back.RED + Fore.WHITE + '"phone" should be interger...Enter "blank" if not known. item was not created'))
                     return {}
+                
         elif keys[i] in d:
-            print(f"{d[keys[i]]} changed to {user_input}")
+            print('\n {:<50}'.format(Fore.CYAN + f"{d[keys[i]]} changed to " + Fore.WHITE + f"{user_input}"))
             d[keys[i]] = user_input
+            
         else:
             d[keys[i]] = user_input
             
@@ -58,36 +68,61 @@ def create_dict(d = dict(), keys = [], list_d = list()):
 
 def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):   
     check = True
+    products_dummy = []
     while check == True:
-        clear()
+        print('\n {:<35}'.format(Fore.CYAN + f'{key} Data:' + Style.RESET_ALL))
         print_list(L)
         if multiple == False:
-            user_input = input(f'     Select the {key} ID . > ')
-            if user_input.isnumeric() and ((not key == "product" and not key == "courier" and len(L)>=int(user_input)>0) or (key == "product" or "courier" and int(user_input) in [obj.contents["id"] for obj in L])):
+            user_input = input('\n {:<35}'.format(Fore.CYAN + f'Select the {key} ID . > ' + Style.RESET_ALL))
+            
+            
+            if user_input.isnumeric() and ((not key == "product" and not key == "courier" and len(L)>=int(user_input)>0) or ((key == "product" or key == "courier") and int(user_input) in [obj.contents["id"] for obj in L])):
                 if key in d:
                     if key == "status":
-                        print(f"{d[key]} changed to {L[int(user_input)-1]}")
                         d[key] = L[int(user_input)-1]
+                        print('\n {:<35}'.format(Fore.CYAN + "Parameter changed"))
                     else:
-                        print(f"{d[key]} changed to {user_input}")
                         d[key] = int(user_input)
+                        print('\n {:<35}'.format(Fore.CYAN + "Parameter changed"))
                 else:
                     d[key] = int(user_input)
                 check = False
+                
             else:
-                input('   Select Only from the list..  Press any key and try again..')
+                input('\n {:<35}'.format(Fore.WHITE + Back.RED + 'Select Only from the list..  Press any key and try again..'  + Style.RESET_ALL))
+                
+                
         else:
-            user_input = input(f'     Select the {key} ID . Use comma-separated ID values for multiple slection  > ').split(",")
-            for i in range(0, len(user_input)):
-                if user_input[i].isnumeric() and ((key == "status" and len(L)>=int(user_input[i])>0) or (key == "product" or "courier" and int(user_input[i]) in [obj.contents["id"] for obj in L])):
-                    if i == len(user_input)-1:
-                        if key in d:
-                            print(f"{d[key]} changed to {list(map(int, user_input))}")
-                        d[key] = list(map(int, user_input))
-                        check = False     
+            user_input = input('\n {:<35}'.format(Fore.CYAN + f'Select the {key} ID and the quantity. Use comma-separated values > ' + Style.RESET_ALL)).split(",")
+            
+            
+            if user_input[0].isnumeric() and int(user_input[0]) in [obj.contents["id"] for obj in L]:
+                
+                for i in range(0, len(L)):
+                    if L[i].contents["id"] == int(user_input[0]): dummy_id = i
+                
+                if len(user_input)>1 and user_input[1].isnumeric() and 0 < int(user_input[1]) <= L[dummy_id].contents["quantity"]:
+                    products_dummy.append(int(user_input[0]))
+                    products_dummy.append(float(user_input[1]))
+                    L[dummy_id].contents["quantity"] = L[dummy_id].contents["quantity"] - float(user_input[1])
                 else:
-                    input('   Select Only from the list..  Press any key and try again..')
-                    break
+                    input('\n {:<35}'.format(Fore.WHITE + Back.RED + 'Quantity parameter not correct . Please try again..' + Style.RESET_ALL))
+                    
+                    continue
+                
+                if  like_to_continue('Would you like to add another Product? - "Y" for yes and "N" for no.'):
+                    continue
+                else:
+                    if key in d:
+                        print('\n {:<35}'.format(Fore.CYAN + "Parameter changed"))
+                        
+                        
+                    d[key] = products_dummy
+                    check = False 
+            
+            else:
+                input('\n {:<35}'.format(Fore.WHITE + Back.RED + 'Select Only from the list..  Press any key and try again..' + Style.RESET_ALL))
+                
             
     return d
     
@@ -95,15 +130,16 @@ def create_dict_with_list(d = dict(), L = list(), key = str, multiple = True):
 def print_dict(list):
     idx = 0
     for item in list:
-        print(f"ID-{idx+1}: {item.contents}")
+        print('\n {:<35}'.format(Fore.CYAN + f"ID-{idx+1}: {item.contents}"))
         idx += 1
         
 def print_dict_k(d = dict()):
     idx = 0
     l = []
+    print(Fore.CYAN + '\n {:-^100}'.format(""))
     for key in d:
         if not key == "id":
-            print(f"ID-{idx+1}: {key}")
+            print('\n {:^100}'.format(Fore.CYAN + f"ID-{idx+1}:  " + Fore.WHITE + f"{key}"))
             l.append(key)
             idx += 1
     return l
@@ -111,23 +147,32 @@ def print_dict_k(d = dict()):
 def print_list(list):
     x = []
     if isinstance(list[0], Product) or isinstance(list[0], Courier):
-        for item in list:
-            print(f"{item.contents}")
-    elif isinstance(list[0], Order):
-        for count, value in enumerate(list):
-            print(f"ID-{count+1}: {value.contents}")
+        for item in list: x.append(item.contents)
+        header = x[0].keys()
+        rows =  [y.values() for y in x]
+        print(Style.BRIGHT + tabulate.tabulate(rows, header, tablefmt="grid"))
+        
+    elif isinstance(list[0], dict):
+        header = list[0].keys()
+        rows =  [y.values() for y in list]
+        print(Style.BRIGHT + tabulate.tabulate(rows, header, tablefmt="grid"))
+        
     else:
         for count, value in enumerate(list):
-            print(f"ID-{count+1}: {value}")
+            print('\n {:<35}'.format(Fore.CYAN + f"ID-{count+1}:" + Fore.WHITE + f"{value}"))
 
 #Print a standard menu based on input and asks for user input
 def create_menu(list = ["Main Menu", "Add New Product", "Edit an Product",  "Delete an Product", "Show Products", "Exit"]):
     clear()
-    print(f'==========[ {list[0]} ]==========')
-    for i in range(1,len(list)):
-        print(f'     {i}. {list[i]}')
     
-    user_choice = input("      Select from the Menu: > ") 
+    print(Back.LIGHTBLACK_EX + '{:=^100}'.format(f'{list[0]}'), "\n")
+    
+    
+    for i in range(1,len(list)):
+        print('{:>35}'.format(Fore.CYAN + f'{i}.') + '{:^35}'.format(Fore.WHITE + f'     {list[i]}'), "\n")
+    
+    user_choice = input('\n {:<35}'.format(Fore.CYAN + "Select from the Menu: > " + Style.RESET_ALL))
+    
     
     # we will return the user choice.
     return user_choice
@@ -135,7 +180,8 @@ def create_menu(list = ["Main Menu", "Add New Product", "Edit an Product",  "Del
 # Check if there is no orders
 def no_orders(log, string = str):
     if not log:
-        input(f'Nothing in the {string} database. Press any key to Continue..')
+        input('\n {:<35}'.format(Fore.LIGHTRED_EX + f'Nothing in the {string} database. Press any key to Continue..' + Style.RESET_ALL))
+        
         return False
     else:
         return True
@@ -144,7 +190,9 @@ def no_orders(log, string = str):
 def like_to_continue(text = "     You select Wrong value'. Would you like to continue in 'Edit a Product'? - 'Y' for yes and 'N' for no."):
     check = True
     while check == True:
-        answer = input(text)
+        answer = input('\n {:<50}'.format(Back.LIGHTBLACK_EX + Fore.WHITE + text + Style.RESET_ALL))
+        
+
         if answer.upper() == "Y":
             check = False
             return True
@@ -157,7 +205,9 @@ def like_to_continue(text = "     You select Wrong value'. Would you like to con
 #Check if user wnats to exit
 def exit(x, y="     You select to Exit or not entered any commands from 'Editing an Product'.. Press any key to Exit. > "):
     if x.upper()=="E" or x ==' ' or x == '':
-        input(y)
+        input('\n {:<35}'.format(Back.LIGHTBLACK_EX + Fore.WHITE + y + Style.RESET_ALL))
+        
+
         return True
     else:
         return False

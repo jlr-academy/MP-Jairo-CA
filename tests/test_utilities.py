@@ -1,6 +1,10 @@
 from unittest.mock import Mock, call, patch
 import sys
+from colorama import Fore, Back, Style
+import tabulate
+
 sys.path.append('C:/Users/jcanoalo/Desktop/IW/Mini_project_1/src')
+
 from Tools.uitilities import create_dict, create_dict_with_list, print_dict, print_dict_k, print_list, create_menu, no_orders, like_to_continue, exit, cap
 import __App__, Items
 
@@ -39,25 +43,25 @@ def test_print_dict(mock_print):
     for item in l:
         actual.append(Items.Product(item))
     print_dict(actual)
-    mock_print.assert_called_with("ID-1: {'name': 'jairo', 'age': '30'}")
+    mock_print.assert_called_with('\n {:<35}'.format(Fore.CYAN + "ID-1: {'name': 'jairo', 'age': '30'}"))
     assert mock_print.call_count == 1
     
 @patch("builtins.print")
 def test_print_dict_k(mock_print):
     #assemble
     d = {"name": "jairo", "age": "30"}
-    expected = [call("ID-1: name"), call("ID-2: age")]
+    expected = [call('\n {:^100}'.format(Fore.CYAN + "ID-1:  " + Fore.WHITE + "name")), call('\n {:^100}'.format(Fore.CYAN + "ID-2:  " + Fore.WHITE + "age"))]
     
     print_dict_k(d)
     
     mock_print.assert_has_calls(expected, any_order=False)
-    assert mock_print.call_count == 2
+    assert mock_print.call_count == 3
 
 @patch("builtins.print")
 def test_print_list(mock_print):
     #assemble
     l = [{"name": "jairo", "age": "30"}]
-    expected = [call("ID-1: {'name': 'jairo', 'age': '30'}")]
+    expected = [call(Style.BRIGHT + tabulate.tabulate([("jairo", "30")], ["name", "age"], tablefmt="grid"))]
     
     actual = []
     for item in l:
@@ -74,7 +78,7 @@ def test_create_menu(mock_input, mock_print):
     #assemble
     mock_input.side_effect = ['1']
     l = ["name", "jairo", "age", "30"]
-    expected = [call('     1. jairo'), call('     2. age')]
+    expected = [call('{:>35}'.format(Fore.CYAN + '1.') +'{:^35}'.format(Fore.WHITE + '     jairo'), "\n"), call('{:>35}'.format(Fore.CYAN + '2.') + '{:^35}'.format(Fore.WHITE + '     age'), "\n")]
     
     actual = []
     for item in l:
