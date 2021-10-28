@@ -266,7 +266,7 @@ def fetch_orders(Table_name):
     
     cursor = connection.cursor()
     
-    cursor.execute(f'SELECT {Table_name}.id, customers.name as customer_name, customers.adress  as customer_adress, customers.phone  as customer_phone, couriers.name as courier, {Table_name}.status FROM {Table_name} INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier GROUP BY {Table_name}.id, customers.name, customers.adress, customers.phone, couriers.name, {Table_name}.status')
+    cursor.execute(f'SELECT {Table_name}.id, customers.name as customer_name, customers.address  as customer_address, customers.phone  as customer_phone, couriers.name as courier, {Table_name}.status FROM {Table_name} INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier GROUP BY {Table_name}.id, customers.name, customers.address, customers.phone, couriers.name, {Table_name}.status')
     rows = cursor.fetchall()
     
     key = [i[0] for i in cursor.description]
@@ -345,7 +345,7 @@ def fetch_orders_status(string = "Preparing"):
     
     cursor = connection.cursor()
     
-    cursor.execute(f'SELECT orders.id, customers.name as customer_name, customers.adress  as customer_adress, customers.phone  as customer_phone, couriers.name as courier, orders.status FROM orders INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier WHERE orders.status = "{string}" GROUP BY orders.id, customers.name, customers.adress, customers.phone, couriers.name, orders.status')
+    cursor.execute(f'SELECT orders.id, customers.name as customer_name, customers.address  as customer_address, customers.phone  as customer_phone, couriers.name as courier, orders.status FROM orders INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier WHERE orders.status = "{string}" GROUP BY orders.id, customers.name, customers.address, customers.phone, couriers.name, orders.status')
     rows = cursor.fetchall()
     
     key = [i[0] for i in cursor.description]
@@ -382,7 +382,7 @@ def fetch_orders_courier(id):
     
     cursor = connection.cursor()
     
-    cursor.execute(f'SELECT orders.id, customers.name as customer_name, customers.adress  as customer_adress, customers.phone  as customer_phone, couriers.name as courier, orders.status FROM orders INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier WHERE orders.courier = "{id}" GROUP BY orders.id, customers.name, customers.adress, customers.phone, couriers.name, orders.status')
+    cursor.execute(f'SELECT orders.id, customers.name as customer_name, customers.address  as customer_address, customers.phone  as customer_phone, couriers.name as courier, orders.status FROM orders INNER JOIN customers ON customers.id = customer INNER JOIN couriers ON couriers.id = courier WHERE orders.courier = "{id}" GROUP BY orders.id, customers.name, customers.address, customers.phone, couriers.name, orders.status')
     rows = cursor.fetchall()
     
     key = [i[0] for i in cursor.description]
@@ -456,7 +456,7 @@ def read(Table_name):
                 time.sleep(2)
             if Table_name == "orders":
                 print(f"No {Table_name} data in the system. A new empty table is being created")
-                cursor.execute(f"CREATE TABLE `customers`(`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,`name` varchar(255) NOT NULL,`adress` varchar(255) NULL, `phone` int NULL, UNIQUE (`name`))")
+                cursor.execute(f"CREATE TABLE `customers`(`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,`name` varchar(255) NOT NULL,`address` varchar(255) NULL, `phone` int NULL, UNIQUE (`name`))")
                 cursor.execute(f"CREATE TABLE `{Table_name}`(`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY, `customer` int NOT NULL, `courier` int NOT NULL, `status` varchar(255) NOT NULL, FOREIGN KEY (customer) REFERENCES customers(id), FOREIGN KEY (courier) REFERENCES couriers(id))")
                 cursor.execute(f"CREATE TABLE `order_products`(`orderid` int NOT NULL,`product` int NOT NULL, `quantity` int NOT NULL, FOREIGN KEY (orderid) REFERENCES orders(id), FOREIGN KEY (product) REFERENCES products(id))")
 
@@ -484,21 +484,21 @@ def read(Table_name):
                 
     return l
 
-# SELECT orders.id, customers.name, customers.adress, customers.phone, couriers.name as courier, orders.status
+# SELECT orders.id, customers.name, customers.address, customers.phone, couriers.name as courier, orders.status
 #   FROM orders
 #      INNER JOIN customers
 #        ON customers.id = customerid
 #      INNER JOIN couriers
 #        ON couriers.id = courierid
 #        WHERE courierid = '4'
-#        GROUP BY orders.id, customers.name, customers.adress, customers.phone, couriers.name, orders.status
+#        GROUP BY orders.id, customers.name, customers.address, customers.phone, couriers.name, orders.status
 # ;
 
-# SELECT orders.id, customers.name, customers.adress, customers.phone, couriers.name as courier, orders.status
+# SELECT orders.id, customers.name, customers.address, customers.phone, couriers.name as courier, orders.status
 #   FROM orders
 #      INNER JOIN customers
 #        ON customers.id = customerid
 #      INNER JOIN couriers
 #        ON couriers.id = courierid
 #        WHERE status= 'preparing'
-#        GROUP BY orders.id, customers.name, customers.adress, customers.phone, couriers.name, orders.status
+#        GROUP BY orders.id, customers.name, customers.address, customers.phone, couriers.name, orders.status

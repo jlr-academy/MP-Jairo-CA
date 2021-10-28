@@ -204,7 +204,7 @@ class Shop:
             log = read_sql("customers")
 
             #add new item and ask if it wants to continue
-            dummy = create_dict({}, ["name", "adress", "phone"], log)
+            dummy = create_dict({}, ["name", "address", "phone"], log)
                 
             if not "name" in dummy.keys():
                 if  like_to_continue(f'{string} Item not created.. Would you like to continue in "Add New {string}"? - "Y" for yes and "N" for no.'):
