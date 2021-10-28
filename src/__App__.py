@@ -821,9 +821,10 @@ class Shop:
                     pass
                 else:
                     return log
-                
-tienda_1 = Shop("1")
-tienda_1.launch() 
+
+if __name__ == '__main__':
+    tienda_1 = Shop("1")
+    tienda_1.launch() 
 
 
     

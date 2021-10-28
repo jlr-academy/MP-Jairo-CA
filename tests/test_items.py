@@ -6,43 +6,43 @@ from  __App__ import Shop
 import Items
 
 
-@patch("Tools.uitilities.like_to_continue") 
-@patch("builtins.input")
-@patch("__App__.fetch_orders")
-def test_edit_order_status(mock_fetch_orders, mock_input, mock_like_to_continue):
+# @patch("Tools.uitilities.like_to_continue") 
+# @patch("builtins.input")
+# @patch("__App__.fetch_orders")
+# def test_edit_order_status(mock_fetch_orders, mock_input, mock_like_to_continue):
     
-    #assemble
-    list_1 = {"customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
-    example = {"customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "On its Way"}
-    expected = Items.Order(example).contents
-    L = [Items.Order(list_1)]
-    string = "Order"
-    status = "2"
+#     #assemble
+#     list_1 = {"customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
+#     example = {"customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "On its Way"}
+#     expected = Items.Order(example).contents
+#     L = [Items.Order(list_1)]
+#     string = "Order"
+#     status = "2"
     
-    mock_input.side_effect = ["1", status, "n", "n"]
-    mock_like_to_continue.side_effect = [False]
-    mock_fetch_orders.side_effect = ['fish']
+#     mock_input.side_effect = ["1", status, "n", "n"]
+#     mock_like_to_continue.side_effect = [False]
+#     mock_fetch_orders.side_effect = ['fish']
 
-    actual = Shop("1").edit_order_status(string)[int("1")-1]
-    assert actual == expected
+#     actual = Shop("1").edit_order_status(string)[int("1")-1]
+#     assert actual == expected
     
-@patch('Tools.uitilities.like_to_continue') 
-@patch("builtins.input")
-def test_edit_order(mock_input, mock_like_to_continue):
+# @patch('Tools.uitilities.like_to_continue') 
+# @patch("builtins.input")
+# def test_edit_order(mock_input, mock_like_to_continue):
     
-    #assemble
-    list_1 = {"id": "1", "customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
-    example = {"id": "1", "customer_name" : "Pepe", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
-    expected = Items.Order(example).contents
-    L = [Items.Order(list_1)]
-    string = "Order"
+#     #assemble
+#     list_1 = {"id": "1", "customer_name" : "Jairo", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
+#     example = {"id": "1", "customer_name" : "Pepe", "customer_address" : "Flat 6", "customer_phone" : "07", "courier" : 1, "status" : "Preparing"}
+#     expected = Items.Order(example).contents
+#     L = [Items.Order(list_1)]
+#     string = "Order"
 
-    mock_input.side_effect = ["1", "1", "pepe", "n",""]
-    mock_like_to_continue.side_effect = [False]
+#     mock_input.side_effect = ["1", "1", "pepe", "n",""]
+#     mock_like_to_continue.side_effect = [False]
 
-    actual = Shop("1").edit_order(L, string)[int("1")-1].contents
-    print(actual)
-    assert actual == expected
+#     actual = Shop("1").edit_order(L, string)[int("1")-1].contents
+#     print(actual)
+#     assert actual == expected
     
 # @patch('Tools.uitilities.like_to_continue') 
 # @patch("builtins.input")
